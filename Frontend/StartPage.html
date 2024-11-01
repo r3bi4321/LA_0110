@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StartStyle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Startseite</title>
+  </head>
+
+  <header>
+    <h1>Journal-Webapplikation</h1>
+  </header>
+
+  <body>
+    <div class="taskleiste">
+        <button onclick="window.location.href='erstellen.html'">Erstellen</button>
+        <button onclick="window.location.href='vorlagen.html'">Vorlagen</button>
+        <button onclick="openPopup()">Hilfe</button>
+    </div>
+    
+    <!-- Popup-Fenster -->
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+    <div class="popup" id="hilfePopup">
+        <p> <strong>Willkommen in deinem persönlichem Journal, halte deine Gedanken und Ideen fest!</strong> <br>
+          Wir befinden uns gerade im Startbereich, hier werden dir all deine bereits erstellten Journale angezeigt. Diese kannst du anwählen und überarbeiten oder ein neues Journal erstellen. <br>      
+          <br><i><u>Wie erstelle ich ein neues Journal?</u></i><br>
+          Wähle in der Taskleiste am linken Bildschirmrand "Erstellen", nun wird ein neues, leeres Journal für dich erstellt. Viel Spass beim Bearbeiten!<br>
+          <br><i><u>Wie erstelle ich ein Journal mit einer Vorlage?</u></i><br>
+          Suche erneut die Taskleiste am linken Bildschirmrand auf und wähle "Vorlagen". Nun steht dir eine Reihe von  Vorlagen zur Verfügung, wähle eine passende aus. Hast du dies getan, wird die Vorlage geladen und dir zur Bearbeitung bereitgestellt. </p>
+        <button class="close-btn" onclick="closePopup()">Schließen</button>
+    </div>
+
+    <script>
+        // Funktion zum Öffnen des Hilfe-Popups
+        function openPopup() {
+            document.getElementById('hilfePopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+    
+        // Funktion zum Schließen des Hilfe-Popups
+        function closePopup() {
+            document.getElementById('hilfePopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Token-Überprüfung und Zugriff auf die Startseite
+        window.onload = async function() {
+            const token = localStorage.getItem('token');
+
+            // Überprüfen, ob der Benutzer eingeloggt ist
+            if (!token) {
+                alert('Kein Token vorhanden. Bitte logge dich ein.');
+                window.location.href = 'LoginPage.html';  // Weiterleiten zur Login-Seite
+                return;
+            }
+
+            try {
+                // Anfrage an den geschützten Endpunkt mit dem Token
+                const response = await fetch('http://localhost:3000/protected', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': token,  // Token im Header senden
+                    },
+                });
+
+                const data = await response.json();
+                if (response.status !== 200) {
+                    alert('Zugriff verweigert: ' + data.message);
+                    window.location.href = 'LoginPage.html';  // Weiterleiten zur Login-Seite bei Fehler
+                } else {
+                    console.log('Zugriff erfolgreich:', data.message);  // Optional: Konsole loggen
+                }
+            } catch (error) {
+                console.error('Fehler beim Zugriff auf die geschützte Route:', error);
+                window.location.href = 'LoginPage.html';  // Weiterleiten zur Login-Seite bei Fehler
+            }
+        };
+    </script>
+  </body>
+  <footer>
+    <p>&copy; 2024 Journal-Webapplikation. All rights reserved. Salma Tanner & Rebecca Willi.</p>
+  </footer>
+</html>
